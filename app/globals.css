@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Home.module.css */
+.background {
+  background-image: url("/images/langit.jpg"); /* Update with your image path */
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the image */
+  min-height: 100vh; /* Full viewport height */
+  background-repeat: no-repeat; /* Prevent tiling */
+}
