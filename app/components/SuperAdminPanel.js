@@ -1,84 +1,100 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SuperAdminDashboard = () => {
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Ahmad Susanto",
-      email: "ahmad.susanto@diskominfo.id",
-      role: "Kepala Bidang",
-      lastActive: "2 jam yang lalu",
-      active: true,
-    },
-    {
-      id: 2,
-      name: "Budi Santoso",
-      email: "budi.santoso@diskominfo.id",
-      role: "Staff",
-      lastActive: "30 menit yang lalu",
-      active: true,
-    },
-    {
-      id: 3,
-      name: "Ratna Dewi",
-      email: "ratna.dewi@diskominfo.id",
-      role: "Admin",
-      lastActive: "1 jam yang lalu",
-      active: true,
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [logs, setLogs] = useState([]);
 
-  const [logs] = useState([
-    "Pengguna baru ditambahkan: Maria Putri",
-    "Perubahan role Budi Santoso (Staff → Kepala Bidang)",
-    "Backup sistem berhasil dilakukan",
-    "Pembaruan sistem ke versi 2.1.0",
-  ]);
+  useEffect(() => {
+    // Fetch users from API
+    fetch("http://192.168.100.67:8000/api/users")
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error("Error fetching users:", error));
+  }, []);
 
-  const handleDeactivateUser = (id) => {
-    setUsers(
-      users.map((user) => (user.id === id ? { ...user, active: false } : user))
-    );
-    alert(`Pengguna dengan ID ${id} dinonaktifkan`);
+  const addLog = (message) => {
+    setLogs((prevLogs) => [
+      ...prevLogs,
+      `[${new Date().toLocaleString()}] ${message}`,
+    ]);
   };
 
-  const handleEditUser = (id) => {
-    const newName = prompt("Masukkan nama baru:");
-    if (newName) {
-      setUsers(
-        users.map((user) =>
-          user.id === id ? { ...user, name: newName } : user
-        )
-      );
-      alert(`Nama pengguna dengan ID ${id} telah diubah menjadi ${newName}`);
-    }
-  };
-
-  const handleAddUser = () => {
+  const handleAddUser = async () => {
     const name = prompt("Masukkan nama pengguna:");
     const email = prompt("Masukkan email pengguna:");
     const role = prompt("Masukkan role pengguna:");
     if (name && email && role) {
-      const newUser = {
-        id: users.length + 1,
-        name,
-        email,
-        role,
-        lastActive: "baru saja",
-        active: true,
-      };
-      setUsers([...users, newUser]);
-      alert(`Pengguna baru ${name} telah ditambahkan`);
+      try {
+        const response = await fetch("http://192.168.100.67:8000/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, role }),
+        });
+        const newUser = await response.json();
+        setUsers((prevUsers) => [...prevUsers, newUser]);
+        addLog(`Pengguna baru ditambahkan: ${name} (${role})`);
+        alert(`Pengguna baru ${name} telah ditambahkan`);
+      } catch (error) {
+        console.error("Error adding user:", error);
+      }
     } else {
       alert("Semua data pengguna harus diisi!");
     }
   };
 
+  const handleEditUser = async (id) => {
+    const newName = prompt("Masukkan nama baru:");
+    if (newName) {
+      try {
+        const response = await fetch(
+          "http://192.168.100.67:8000/api/users/${id}",
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: newName }),
+          }
+        );
+        const updatedUser = await response.json();
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === id ? { ...user, ...updatedUser } : user
+          )
+        );
+        addLog(`Nama pengguna dengan ID ${id} diubah menjadi ${newName}`);
+        alert(`Nama pengguna dengan ID ${id} telah diubah menjadi ${newName}`);
+      } catch (error) {
+        console.error("Error updating user:", error);
+      }
+    }
+  };
+
+  const handleDeactivateUser = async (id, isActive) => {
+    try {
+      const action = isActive ? "deactivate" : "reactivate"; // Tentukan tindakan berdasarkan status aktif
+      const response = await fetch(
+        "http://192.168.100.67:8000/api/users/${id}/${action}",
+        {
+          method: "PATCH",
+        }
+      );
+      const updatedUser = await response.json();
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, active: updatedUser.active } : user
+        )
+      );
+      const status = isActive ? "dinonaktifkan" : "diaktifkan kembali";
+      addLog(`Pengguna dengan ID ${id} telah ${status}`);
+      alert(`Pengguna dengan ID ${id} ${status}`);
+    } catch (error) {
+      console.error("Error changing user status:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Main Content */}
       <main className="p-6">
         {/* Statistik Panel */}
         <div className="grid grid-cols-4 gap-4 mb-6">
@@ -127,7 +143,7 @@ const SuperAdminDashboard = () => {
                   <p className="font-semibold">{user.name}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
                   <p className="text-sm text-gray-400">
-                    Terakhir aktif: {user.lastActive}
+                    Terakhir aktif: {user.lastActive || "Tidak diketahui"}
                   </p>
                 </div>
                 <div className="flex space-x-2">
@@ -138,10 +154,14 @@ const SuperAdminDashboard = () => {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDeactivateUser(user.id)}
-                    className="text-sm bg-red-100 text-red-600 px-3 py-1 rounded"
+                    onClick={() => handleDeactivateUser(user.id, user.active)}
+                    className={`text-sm px-3 py-1 rounded ${
+                      user.active
+                        ? "bg-red-100 text-red-600"
+                        : "bg-green-100 text-green-600"
+                    }`}
                   >
-                    {user.active ? "Nonaktifkan" : "Aktifkan"}
+                    {user.active ? "Nonaktifkan" : "Aktifkan Kembali"}
                   </button>
                 </div>
               </div>
@@ -163,16 +183,6 @@ const SuperAdminDashboard = () => {
             </ul>
           </div>
         </div>
-
-        {/* Statistik Aktivitas Sistem */}
-        <div className="bg-white p-6 rounded shadow mt-6">
-          <h2 className="text-lg font-semibold mb-4">
-            Statistik Aktivitas Sistem
-          </h2>
-          <div>
-            <Chart />
-          </div>
-        </div>
       </main>
     </div>
   );
@@ -185,14 +195,5 @@ const StatCard = ({ title, value, subtitle }) => (
     <p className="text-xs text-gray-400">{subtitle}</p>
   </div>
 );
-
-const Chart = () => {
-  // Dummy chart component
-  return (
-    <div className="h-48 bg-gray-200 flex items-center justify-center">
-      <p className="text-sm text-gray-500">Chart Placeholder</p>
-    </div>
-  );
-};
 
 export default SuperAdminDashboard;

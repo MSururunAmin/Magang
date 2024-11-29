@@ -31,15 +31,35 @@ const DashboardAdministrator = () => {
   ]);
 
   const handleReply = (id) => {
-    const message = prompt(
-      `Masukkan pesan balasan untuk permohonan dengan ID ${id}:`
-    );
-    if (message) {
-      alert(`Balasan telah dikirim: ${message}`);
-      // Tambahkan logika pengiriman balasan (misalnya, API call di sini)
-    } else {
-      alert("Balasan tidak boleh kosong!");
-    }
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".pdf, .docx, .doc"; // Terima file PDF dan Word
+
+    fileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+
+      if (file) {
+        const message = prompt(
+          `Masukkan pesan balasan untuk permohonan dengan ID ${id}:`
+        );
+
+        if (message) {
+          // Logika pengiriman file dan pesan balasan
+          const formData = new FormData();
+          formData.append("message", message);
+          formData.append("file", file);
+
+          // Misalnya kirim file ke server menggunakan API
+          // await fetch('/api/sendReply', { method: 'POST', body: formData });
+
+          alert(`Balasan telah dikirim untuk permohonan ID ${id}: ${message}`);
+        } else {
+          alert("Balasan tidak boleh kosong!");
+        }
+      }
+    };
+
+    fileInput.click();
   };
 
   return (
