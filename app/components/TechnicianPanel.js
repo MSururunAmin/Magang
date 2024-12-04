@@ -14,7 +14,7 @@ const TechnicianDashboard = () => {
 
       try {
         const response = await fetch(
-          "http://192.168.100.67:8000/api/technician/requests",
+          "http://192.168.100.8:8000/api/technician/requests",
           {
             method: "GET",
             headers: {
@@ -46,7 +46,7 @@ const TechnicianDashboard = () => {
 
     try {
       const response = await fetch(
-        "http://192.168.100.67:8000/api/technician/update-status",
+        "http://192.168.100.8:8000/api/technician/update-status",
         {
           method: "POST",
           headers: {

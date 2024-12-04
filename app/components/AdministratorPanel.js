@@ -1,66 +1,99 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const DashboardAdministrator = () => {
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      applicant: "John Doe",
-      date: "2024-01-20",
-      serviceType: "Permohonan Hosting",
-      codeOffice: "CO-001",
-      status: "Menunggu",
-    },
-    {
-      id: 2,
-      applicant: "Jane Smith",
-      date: "2024-01-19",
-      serviceType: "Permohonan Email",
-      codeOffice: "CO-002",
-      status: "Diproses",
-    },
-    {
-      id: 3,
-      applicant: "Bob Johnson",
-      date: "2024-01-18",
-      serviceType: "Troubleshoot Jaringan",
-      codeOffice: "CO-003",
-      status: "Selesai",
-    },
-  ]);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true); // Tambahkan state loading
 
-  const handleReply = (id) => {
+  // Ambil data dari API
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(
+          "http://192.168.100.8:8000/api/admin/requests"
+        );
+        const data = await response.json();
+        setRequests(data); // Simpan data ke state
+        setLoading(false); // Matikan loading
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
+  // Handle reply logic
+  const handleReply = async (id) => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
-    fileInput.accept = ".pdf, .docx, .doc"; // Terima file PDF dan Word
+    fileInput.accept = ".pdf, .docx, .doc";
 
     fileInput.onchange = async (e) => {
       const file = e.target.files[0];
 
       if (file) {
-        const message = prompt(
-          `Masukkan pesan balasan untuk permohonan dengan ID ${id}:`
-        );
+        // Balasan otomatis
+        const predefinedMessages = [
+          "Permohonan Anda sedang diproses.",
+          "Dokumen telah diterima, kami akan segera menindaklanjuti.",
+          "Permohonan Anda disetujui. Silakan cek detail lebih lanjut.",
+          "Mohon lengkapi dokumen yang kurang.",
+        ];
 
-        if (message) {
-          // Logika pengiriman file dan pesan balasan
+        // Pilihan balasan otomatis
+        const selectedMessage = await new Promise((resolve) => {
+          const select = document.createElement("select");
+          select.style.margin = "10px 0";
+          select.innerHTML = predefinedMessages
+            .map((msg) => `<option value="${msg}">${msg}</option>`)
+            .join("");
+
+          const confirmButton = document.createElement("button");
+          confirmButton.textContent = "Kirim Balasan";
+          confirmButton.style.marginLeft = "10px";
+          confirmButton.onclick = () => resolve(select.value);
+
+          document.body.appendChild(select);
+          document.body.appendChild(confirmButton);
+        });
+
+        if (selectedMessage) {
           const formData = new FormData();
-          formData.append("message", message);
+          formData.append("message", selectedMessage);
           formData.append("file", file);
 
-          // Misalnya kirim file ke server menggunakan API
-          // await fetch('/api/sendReply', { method: 'POST', body: formData });
+          try {
+            const response = await fetch(
+              `http://192.168.100.8:8000/api/admin/reply/${id}`,
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
 
-          alert(`Balasan telah dikirim untuk permohonan ID ${id}: ${message}`);
-        } else {
-          alert("Balasan tidak boleh kosong!");
+            const result = await response.json();
+
+            if (response.ok) {
+              alert(`Balasan berhasil dikirim: ${result.message}`);
+            } else {
+              alert(`Error: ${result.message}`);
+            }
+          } catch (error) {
+            alert("Terjadi kesalahan saat mengirim balasan");
+          }
         }
       }
     };
 
     fileInput.click();
   };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -92,7 +125,6 @@ const DashboardAdministrator = () => {
               <th className="border px-4 py-2 text-left">Pemohon</th>
               <th className="border px-4 py-2 text-left">Tanggal</th>
               <th className="border px-4 py-2 text-left">Jenis Layanan</th>
-              <th className="border px-4 py-2 text-left">Code Office</th>
               <th className="border px-4 py-2 text-left">Status</th>
               <th className="border px-4 py-2 text-left">Aksi</th>
             </tr>
@@ -101,17 +133,16 @@ const DashboardAdministrator = () => {
             {requests.map((request, index) => (
               <tr key={request.id}>
                 <td className="border px-4 py-2">{index + 1}</td>
-                <td className="border px-4 py-2">{request.applicant}</td>
+                <td className="border px-4 py-2">{request.name}</td>
                 <td className="border px-4 py-2">{request.date}</td>
-                <td className="border px-4 py-2">{request.serviceType}</td>
-                <td className="border px-4 py-2">{request.codeOffice}</td>
+                <td className="border px-4 py-2">{request.category}</td>
                 <td className="border px-4 py-2">{request.status}</td>
                 <td className="border px-4 py-2">
                   <button
                     onClick={() => handleReply(request.id)}
                     className="bg-blue-500 text-white px-4 py-2 rounded"
                   >
-                    ✉️ Balas
+                    ✉ Balas
                   </button>
                 </td>
               </tr>

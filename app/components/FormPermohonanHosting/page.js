@@ -48,7 +48,7 @@ const FormPage = () => {
             formDataToSend.append(key, formData[key]);
         }
 
-        const response = await fetch("http://192.168.100.67:8000/api/hosting-request", {
+        const response = await fetch("http://192.168.100.8:8000/api/hosting-request", {
             method: "POST",
             body: formDataToSend,
         });

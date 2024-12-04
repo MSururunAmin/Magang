@@ -47,7 +47,7 @@ const FormPage = () => {
         formDataToSend.append(key, formData[key]);
       }
 
-      const response = await fetch("http://192.168.100.67:8000/api/PermohonanZoom", {
+      const response = await fetch("http://192.168.100.8:8000/api/PermohonanZoom", {
         method: "POST",
         body: formDataToSend,
       });

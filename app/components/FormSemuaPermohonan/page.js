@@ -10,6 +10,7 @@ const FormPage = () => {
     category: "",
     codeOffice: "",
     description: "",
+    status: "Menunggu", // Tambahkan status default
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +48,7 @@ const FormPage = () => {
 
     try {
       const response = await fetch(
-        "http://192.168.68.136:8000/api/submit-request",
+        "http://192.168.100.8:8000/api/submit-request",
         {
           method: "POST",
           headers: {

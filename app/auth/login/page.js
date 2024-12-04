@@ -16,13 +16,13 @@ const Login = () => {
 
     // Dummy login logic
     if (username === "admin" && password === "password") {
-      setRole("super-admin");
+      setRole("Super-admin");
     } else if (username === "teknisi" && password === "password") {
-      setRole("teknisi");
+      setRole("Teknisi");
     } else if (username === "administrator" && password === "password") {
-      setRole("administrator");
+      setRole("Administrator");
     } else if (username === "viewer" && password === "password") {
-      setRole("viewer");
+      setRole("Viewer");
     } else {
       alert("Username atau Password salah!");
       return;

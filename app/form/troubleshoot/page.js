@@ -63,7 +63,7 @@ const FormPage = () => {
       formDataToSend.append("description", formData.description);
 
       const response = await fetch(
-        "http://192.168.100.67:8000/api/submit-form",
+        "http://192.168.100.8:8000/api/submit-form",
         {
           method: "POST",
           body: formDataToSend, // Kirim FormData, bukan JSON

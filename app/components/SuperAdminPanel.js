@@ -8,7 +8,7 @@ const SuperAdminDashboard = () => {
 
   useEffect(() => {
     // Fetch users from API
-    fetch("http://192.168.100.67:8000/api/users")
+    fetch("http://192.168.100.8:8000/api/users")
       .then((response) => response.json())
       .then((data) => setUsers(data))
       .catch((error) => console.error("Error fetching users:", error));
@@ -27,7 +27,7 @@ const SuperAdminDashboard = () => {
     const role = prompt("Masukkan role pengguna:");
     if (name && email && role) {
       try {
-        const response = await fetch("http://192.168.100.67:8000/api/users", {
+        const response = await fetch("http://192.168.100.8:8000/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, email, role }),
@@ -49,7 +49,7 @@ const SuperAdminDashboard = () => {
     if (newName) {
       try {
         const response = await fetch(
-          "http://192.168.100.67:8000/api/users/${id}",
+          `http://192.168.100.8:8000/api/users/${id}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -72,12 +72,10 @@ const SuperAdminDashboard = () => {
 
   const handleDeactivateUser = async (id, isActive) => {
     try {
-      const action = isActive ? "deactivate" : "reactivate"; // Tentukan tindakan berdasarkan status aktif
+      const action = isActive ? "deactivate" : "reactivate";
       const response = await fetch(
-        "http://192.168.100.67:8000/api/users/${id}/${action}",
-        {
-          method: "PATCH",
-        }
+        `http://192.168.100.8:8000/api/users/${id}/${action}`,
+        { method: "PATCH" }
       );
       const updatedUser = await response.json();
       setUsers((prevUsers) =>
@@ -93,10 +91,24 @@ const SuperAdminDashboard = () => {
     }
   };
 
+  const handleDeleteUser = async (id) => {
+    if (confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
+      try {
+        await fetch(`http://192.168.100.8:8000/api/users/${id}`, {
+          method: "DELETE",
+        });
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+        addLog(`Pengguna dengan ID ${id} telah dihapus`);
+        alert(`Pengguna dengan ID ${id} telah dihapus`);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <main className="p-6">
-        {/* Statistik Panel */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           <StatCard
             title="Total Pengguna"
@@ -121,7 +133,6 @@ const SuperAdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-6">
-          {/* Manajemen Pengguna */}
           <div className="col-span-2 bg-white p-6 rounded shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Manajemen Pengguna</h2>
@@ -142,9 +153,6 @@ const SuperAdminDashboard = () => {
                 <div>
                   <p className="font-semibold">{user.name}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
-                  <p className="text-sm text-gray-400">
-                    Terakhir aktif: {user.lastActive || "Tidak diketahui"}
-                  </p>
                 </div>
                 <div className="flex space-x-2">
                   <button
@@ -161,14 +169,19 @@ const SuperAdminDashboard = () => {
                         : "bg-green-100 text-green-600"
                     }`}
                   >
-                    {user.active ? "Nonaktifkan" : "Aktifkan Kembali"}
+                    {user.active ? "Nonaktifkan" : "Aktifkan"}
+                  </button>
+                  <button
+                    onClick={() => handleDeleteUser(user.id)}
+                    className="text-sm bg-red-500 text-white px-3 py-1 rounded"
+                  >
+                    Hapus
                   </button>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Log Sistem */}
           <div className="bg-white p-6 rounded shadow">
             <h2 className="text-lg font-semibold mb-4">Log Sistem</h2>
             <ul className="space-y-3">
