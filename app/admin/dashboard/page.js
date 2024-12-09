@@ -25,7 +25,7 @@ ChartJS.register(
   Legend
 );
 
-const ViewerDashboard = () => {
+const Page = () => {
   const [data, setData] = useState({
     totalPermohonan: 127,
     dalamProses: 45,
@@ -170,4 +170,4 @@ const Chart = ({ data }) => {
   return <Line data={chartData} options={options} />;
 };
 
-export default ViewerDashboard;
+export default Page;

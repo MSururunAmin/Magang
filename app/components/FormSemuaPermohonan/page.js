@@ -100,9 +100,9 @@ const FormPage = () => {
   return (
     <>
       <NavbarPage />
-      <div className="flex items-center justify-center min-h-screen p-8">
-        <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-lg">
-          <h1 className="text-2xl font-bold mb-6 text-center text-purple-600">
+      <div className="flex items-center justify-center min-h-screen p-4 sm:p-8">
+        <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md sm:max-w-lg lg:max-w-2xl">
+          <h1 className="text-xl sm:text-2xl font-bold mb-6 text-center text-purple-600">
             FORMULIR
           </h1>
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
@@ -227,3 +227,4 @@ const FormPage = () => {
 };
 
 export default FormPage;
+s

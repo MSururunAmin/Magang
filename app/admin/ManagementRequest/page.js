@@ -7,31 +7,25 @@ const page = () => {
   const [requests, setRequests] = useState([]);
 
   useEffect(() => {
-    setRequests([
-      {
-        id: 1,
-        nama: "John Doe",
-        tanggal: "2024-12-03",
-        kategori: "Hosting",
-        fileBukti: "https://via.placeholder.com/100",
-        keterangan: "Permohonan hosting website desa",
-        status: "Disetujui",
-      },
-      {
-        id: 2,
-        nama: "Jane Smith",
-        tanggal: "2024-12-02",
-        kategori: "Zoom Meeting",
-        fileBukti: "https://via.placeholder.com/100",
-        keterangan: "Permohonan penggunaan Zoom",
-        status: "Menunggu Persetujuan",
-      },
-    ]);
+    const fetchRequests = async () => {
+      try {
+        const response = await fetch(
+          "http://192.168.100.8:8000/api/daftar-permohonan"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch requests");
+        }
+        const data = await response.json();
+        setRequests(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    fetchRequests();
   }, []);
 
-  const generateUniqueCode = (id) => {
-    return `REQ-${id.toString().padStart(4, "0")}`;
-  };
+  const generateUniqueCode = (kodeUnik) => kodeUnik || "Tidak ada kode unik";
 
   return (
     <div className="min-h-screen bg-gray-100 px-0">
@@ -53,10 +47,10 @@ const page = () => {
             </tr>
           </thead>
           <tbody>
-            {requests.map((request) => (
-              <tr key={request.id} className="text-center">
+            {requests.map((request, index) => (
+              <tr key={index} className="text-center">
                 <td className="border border-gray-300 px-4 py-2">
-                  {request.id}
+                  {index + 1} {/* Gunakan indeks untuk ID yang berurutan */}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {request.nama}
@@ -68,7 +62,7 @@ const page = () => {
                   {request.kategori}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
-                  {generateUniqueCode(request.id)}
+                  {generateUniqueCode(request.kodeUnik)}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   <a

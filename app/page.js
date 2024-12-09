@@ -9,8 +9,8 @@ import Navbar from "./navigation/page";
 const Home = () => {
   return (
     <>
-      <div div className="background">
-        <div className="flex flex-row items-start justify-between w-full">
+      <div className="background">
+        <div className="flex flex-row items-start justify-items-start w-full">
           <Navbar />
           <div className="flex-grow flex justify-center">
             <LogoSection />

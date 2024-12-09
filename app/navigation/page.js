@@ -88,14 +88,7 @@ const Navbar = () => {
                   </Link>
                 </div>
 
-                <div className="flex flex-col items-center mb-40">
-                  <Link
-                    href="/login"
-                    className="bg-white text-purple-800 hover:bg-gray-200 px-14 py-2 rounded-md"
-                  >
-                    Masuk
-                  </Link>
-                </div>
+                <div className="flex flex-col items-center mb-40"></div>
               </div>
             </>
           )}
