@@ -1,6 +1,7 @@
-// app/admin/dashboard.js
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 import SuperAdminPanel from "@/app/components/SuperAdminPanel";
 import AdministratorPanel from "@/app/components/AdministratorPanel";
@@ -10,6 +11,14 @@ import NavbarDashboard from "@/app/components/NavbarDashboard";
 
 const page = () => {
   const { role } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!role) {
+      // Redirect to login if role is not set
+      router.push("/auth/login");
+    }
+  }, [role, router]);
 
   return (
     <div className="min-h-screen bg-gray-100">

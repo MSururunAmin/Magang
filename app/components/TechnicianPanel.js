@@ -104,11 +104,6 @@ const TechnicianDashboard = () => {
                 subtitle="Jumlah semua permohonan"
               />
               <StatCard
-                title="Menunggu"
-                value={stats.waiting}
-                subtitle="Permohonan belum ditindaklanjuti"
-              />
-              <StatCard
                 title="Diterima"
                 value={stats.accepted}
                 subtitle="Permohonan sudah diterima"

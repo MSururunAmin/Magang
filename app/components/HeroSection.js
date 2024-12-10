@@ -10,11 +10,22 @@ const HeroSection = () => {
     setActiveSection(activeSection === section ? null : section);
   };
 
+  // Fungsi untuk menentukan href berdasarkan nama item
+  const getHref = (item) => {
+    const specificLinks = {
+      "Permohonan Zoom": "/components/FormPermohonanZoom",
+      "Permohonan Hosting": "/components/FormPermohonanHosting",
+      Troubleshoot: "/components/FormTroubleshoot", // Mengarahkan Troubleshoot ke FormTroubleshoot
+      Jaringan: "/components/FormTroubleshoot", // Jika item "Jaringan" mengarah ke FormTroubleshoot
+      Web: "/components/FormTroubleshoot", // Jika item "Web" mengarah ke FormTroubleshoot
+      Server: "/components/FormTroubleshoot", // Jika item "Server" mengarah ke FormTroubleshoot
+    };
+    return specificLinks[item] || "/components/FormSemuaPermohonan";
+  };
+
   return (
     <div className="p-4 md:p-20">
       <div className="flex flex-wrap justify-center gap-12 md:gap-16 lg:gap-20">
-        {" "}
-        {/* Updated gap values */}
         {/* Aplikasi */}
         <div className="relative flex flex-col items-center">
           <div
@@ -56,14 +67,13 @@ const HeroSection = () => {
                   key={index}
                   className="py-2 px-4 bg-white rounded-lg shadow-md hover:bg-blue-50 transition"
                 >
-                  <Link href={`/components/Form${item.replace(" ", "")}`}>
-                    {item}
-                  </Link>
+                  <Link href={getHref(item)}>{item}</Link>
                 </li>
               ))}
             </ul>
           )}
         </div>
+
         {/* Jaringan */}
         <div className="relative flex flex-col items-center">
           <div
@@ -103,14 +113,13 @@ const HeroSection = () => {
                   key={index}
                   className="py-2 px-4 bg-white rounded-lg shadow-md hover:bg-blue-50 transition"
                 >
-                  <Link href={`/components/Form${item.replace(" ", "")}`}>
-                    {item}
-                  </Link>
+                  <Link href={getHref(item)}>{item}</Link>
                 </li>
               ))}
             </ul>
           )}
         </div>
+
         {/* Troubleshoot */}
         <div className="relative flex flex-col items-center">
           <div
@@ -150,9 +159,7 @@ const HeroSection = () => {
                   key={index}
                   className="py-2 px-4 bg-white rounded-lg shadow-md hover:bg-blue-50 transition"
                 >
-                  <Link href={`/troubleshoot-${item.toLowerCase()}`}>
-                    {item}
-                  </Link>
+                  <Link href={getHref(item)}>{item}</Link>
                 </li>
               ))}
             </ul>

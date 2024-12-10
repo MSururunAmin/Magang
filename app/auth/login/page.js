@@ -1,7 +1,6 @@
-// app/auth/login/page.js
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 
@@ -10,6 +9,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const { setRole } = useUser();
   const router = useRouter();
+
+  // Load username from localStorage when component mounts
+  useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+    if (savedUsername) {
+      setUsername(savedUsername);
+    }
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -28,7 +35,16 @@ const Login = () => {
       return;
     }
 
+    // Save username to localStorage
+    localStorage.setItem("username", username);
+
     router.push("/admin/dashboard");
+  };
+
+  const handleUsernameChange = (e) => {
+    const value = e.target.value;
+    setUsername(value);
+    localStorage.setItem("username", value); // Save username in localStorage during typing
   };
 
   return (
@@ -44,7 +60,7 @@ const Login = () => {
               type="text"
               className="w-full p-2 border rounded mt-1"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsernameChange}
               required
             />
           </div>

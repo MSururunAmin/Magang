@@ -20,10 +20,31 @@ const FormPage = () => {
   const router = useRouter();
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, type, files } = e.target;
+    if (type === "file" && files[0]) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ];
+      if (!allowedTypes.includes(files[0].type)) {
+        alert(
+          "Tipe file tidak diizinkan. Pilih file dengan ekstensi jpg, png, pdf, doc, atau xlsx."
+        );
+        return;
+      }
+      if (files[0].size > 2048 * 1024) {
+        // Maksimum 2 MB
+        alert("Ukuran file melebihi 2 MB.");
+        return;
+      }
+    }
     setFormData({
       ...formData,
-      [name]: type === "file" ? files[0] : value,
+      [name]: type === "file" ? files[0] : e.target.value,
     });
   };
 
@@ -34,7 +55,12 @@ const FormPage = () => {
     setSuccessMessage(null);
     setConsoleOutput("");
 
-    if (!formData.name || !formData.date || !formData.category || !formData.codeOffice) {
+    if (
+      !formData.name ||
+      !formData.date ||
+      !formData.category ||
+      !formData.codeOffice
+    ) {
       setError("Semua field yang diperlukan harus diisi.");
       setIsSubmitting(false);
       return;
@@ -47,20 +73,27 @@ const FormPage = () => {
         formDataToSend.append(key, formData[key]);
       }
 
-      const response = await fetch("http://192.168.100.8:8000/api/PermohonanZoom", {
-        method: "POST",
-        body: formDataToSend,
-      });
+      const response = await fetch(
+        "http://192.168.100.8:8000/api/PermohonanZoom",
+        {
+          method: "POST",
+          body: formDataToSend,
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
-        setConsoleOutput(`Detail kesalahan: ${JSON.stringify(errorData)}`);
+        setConsoleOutput(`Detailkesalahan: ${JSON.stringify(errorData)}`);
         throw new Error(errorData.message || "Gagal mengirim permohonan.");
       }
 
       const result = await response.json();
-      setConsoleOutput(`Permohonan berhasil dikirim: ${JSON.stringify(result)}`);
-      setSuccessMessage(`Permohonan berhasil dikirim. Kode unik Anda: ${result.unique_code}`);
+      setConsoleOutput(
+        `Permohonan berhasil dikirim: ${JSON.stringify(result)}`
+      );
+      setSuccessMessage(
+        `Permohonan berhasil dikirim. Kode unik Anda: ${result.unique_code}`
+      );
 
       setFormData({
         name: "",
@@ -74,7 +107,9 @@ const FormPage = () => {
       router.push(`/status?uniqueCode=${result.unique_code}`);
     } catch (error) {
       console.error("Terjadi kesalahan:", error.message);
-      setError("Terjadi kesalahan saat mengirim permohonan. Silakan coba lagi.");
+      setError(
+        "Terjadi kesalahan saat mengirim permohonan. Silakan coba lagi."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -161,6 +196,8 @@ const FormPage = () => {
                 onChange={handleChange}
                 required
                 placeholder="Code Office"
+                maxLength={8} // Membatasi panjang maksimal 8 karakter
+                minLength={8} // Membatasi panjang minimal 8 karakter
                 className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
               />
             </div>
@@ -206,14 +243,6 @@ const FormPage = () => {
               {isSubmitting ? "Mengirim..." : "Kirim Permohonan"}
             </button>
           </form>
-
-          {/* Menampilkan hasil console */}
-          {consoleOutput && (
-            <div className="mt-6 p-4 bg-gray-200 rounded-md">
-              <h2 className="text-lg font-bold mb-2">Hasil Console:</h2>
-              <pre className="text-sm">{consoleOutput}</pre>
-            </div>
-          )}
         </div>
       </div>
     </>

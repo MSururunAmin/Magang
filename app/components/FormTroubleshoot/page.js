@@ -9,6 +9,7 @@ const FormPage = () => {
     category: "",
     uploadFile: "",
     description: "",
+    officeCode: "", // Menambahkan field kode office
   });
   const [uploadFile, setUploadFile] = useState(null); // State khusus untuk file
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,9 +29,17 @@ const FormPage = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setUploadFile(file); // Set file ke state
-      console.log("File dipilih:", file.name); // Untuk debugging di console
-      setConsoleOutput(`File dipilih: ${file.name}`); // Menyimpan output file yang dipilih
+      // Periksa ukuran file sebelum diset
+      const maxSize = 8 * 1024 * 1024; // 8MB
+      if (file.size > maxSize) {
+        setError("Ukuran file tidak boleh lebih dari 8MB.");
+        setUploadFile(null); // Reset file jika ukuran terlalu besar
+        return;
+      } else {
+        setUploadFile(file); // Set file ke state
+        console.log("File dipilih:", file.name); // Untuk debugging di console
+        setConsoleOutput(`File dipilih: ${file.name}`); // Menyimpan output file yang dipilih
+      }
     }
   };
 
@@ -46,9 +55,17 @@ const FormPage = () => {
       !formData.date ||
       !formData.category ||
       !uploadFile || // Pastikan file sudah ada
-      !formData.description
+      !formData.description ||
+      !formData.officeCode // Pastikan kode office diisi
     ) {
       setError("Semua field harus diisi.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validasi kode office hanya boleh 8 angka
+    if (!/^\d{8}$/.test(formData.officeCode)) {
+      setError("Kode office harus terdiri dari 8 angka.");
       setIsSubmitting(false);
       return;
     }
@@ -61,6 +78,7 @@ const FormPage = () => {
       formDataToSend.append("category", formData.category);
       formDataToSend.append("uploadFile", uploadFile); // Append file
       formDataToSend.append("description", formData.description);
+      formDataToSend.append("officeCode", formData.officeCode); // Menambahkan kode office
 
       const response = await fetch(
         "http://192.168.100.8:8000/api/submit-form",
@@ -92,6 +110,7 @@ const FormPage = () => {
         category: "",
         uploadFile: "",
         description: "",
+        officeCode: "", // Reset kode office
       });
 
       router.push(`/status?uniqueCode=${result.unique_code}`);
@@ -171,6 +190,25 @@ const FormPage = () => {
             </select>
           </div>
 
+          {/* Kode Office */}
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="officeCode">
+              Kode Office:
+            </label>
+            <input
+              type="text"
+              id="officeCode"
+              name="officeCode"
+              value={formData.officeCode}
+              onChange={handleChange}
+              required
+              maxLength={8}
+              pattern="\d{8}" // Hanya angka 8 digit
+              placeholder="Kode Office 8 digit"
+              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+            />
+          </div>
+
           {/* Bukti Pengiriman */}
           <div className="mb-4">
             <label className="block text-gray-700" htmlFor="uploadFile">
@@ -215,13 +253,6 @@ const FormPage = () => {
             {isSubmitting ? "Mengirim..." : "Kirim Permohonan"}
           </button>
         </form>
-        {/* Menampilkan hasil console */}
-        {consoleOutput && (
-          <div className="mt-6 p-4 bg-gray-200 rounded-md">
-            <h2 className="text-lg font-bold mb-2">Hasil Console:</h2>
-            <pre className="text-sm">{consoleOutput}</pre>
-          </div>
-        )}
       </div>
     </div>
   );

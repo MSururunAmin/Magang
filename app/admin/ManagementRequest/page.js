@@ -66,7 +66,7 @@ const page = () => {
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   <a
-                    href={request.fileBukti}
+                    href={`https://e-office.semarangkab.go.id/verifikasi_surat/id/${request.kodeUnik}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 underline"

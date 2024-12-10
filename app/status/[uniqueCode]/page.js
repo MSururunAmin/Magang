@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavbarPage from "@/app/navigation/NavbarPage";
+import {
+  CheckCircle,
+  Handshake,
+  Hourglass,
+  Truck,
+} from "@phosphor-icons/react";
 
 const StatusPage = ({ params }) => {
   const router = useRouter();
@@ -63,10 +69,26 @@ const StatusPage = ({ params }) => {
   }
 
   const statusSteps = [
-    { label: "Terkirim", icon: "🚚💨" },
-    { label: "Diterima", icon: "🤲" },
-    { label: "Diproses", icon: "⌛" },
-    { label: "Selesai", icon: "✅" },
+    {
+      label: "Terkirim",
+      icon: <Truck weight="bold" />,
+      color: "text-purple-500",
+    },
+    {
+      label: "Diterima",
+      icon: <Handshake weight="bold" />,
+      color: "text-purple-500",
+    },
+    {
+      label: "Diproses",
+      icon: <Hourglass weight="bold" />,
+      color: "text-purple-500",
+    },
+    {
+      label: "Selesai",
+      icon: <CheckCircle weight="bold" />,
+      color: "text-purple-500",
+    },
   ];
 
   const currentStepIndex = statusSteps.findIndex(
@@ -87,12 +109,11 @@ const StatusPage = ({ params }) => {
       </div>
     );
   }
+
   const handleDownload = () => {
-    if (statusData.reply_file_url) {
-      window.open(statusData.reply_file_url, "_blank", "noopener,noreferrer");
-    } else {
-      alert("File tidak tersedia");
-    }
+    // Redirect to the specified URL
+    window.location.href =
+      "https://e-office.semarangkab.go.id/verifikasi_surat/id/YZMYOTZJ";
   };
 
   return (
@@ -111,13 +132,13 @@ const StatusPage = ({ params }) => {
                 key={index}
                 className={`flex flex-col items-center ${
                   index < currentStepIndex
-                    ? "text-green-600"
+                    ? step.color
                     : index === currentStepIndex
                     ? "text-purple-600"
                     : "text-gray-400"
                 }`}
               >
-                <span className="text-4xl">{step.icon}</span>
+                <div className="text-4xl">{step.icon}</div>
                 <span className="mt-2 text-sm">{step.label}</span>
               </div>
             ))}

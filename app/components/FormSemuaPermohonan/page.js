@@ -13,6 +13,7 @@ const FormPage = () => {
     status: "Menunggu", // Tambahkan status default
   });
 
+  const [file, setFile] = useState(null); // Tambahkan state untuk file
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -21,10 +22,20 @@ const FormPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Validasi panjang codeOffice
+    if (name === "codeOffice" && value.length > 8) {
+      return; // Abaikan jika panjang melebihi 8 karakter
+    }
+
     setFormData({
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]); // Menyimpan file yang diunggah
   };
 
   const handleSubmit = async (e) => {
@@ -33,6 +44,13 @@ const FormPage = () => {
     setError(null);
     setSuccessMessage(null);
     setConsoleOutput(""); // Reset hasil console
+
+    // Validasi panjang codeOffice sebelum mengirim permohonan
+    if (formData.codeOffice.length !== 8) {
+      setError("Code Office harus memiliki panjang tepat 8 karakter.");
+      setIsSubmitting(false);
+      return;
+    }
 
     if (
       !formData.name ||
@@ -46,16 +64,27 @@ const FormPage = () => {
       return;
     }
 
+    if (!file) {
+      setError("File harus diunggah.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("date", formData.date);
+      data.append("category", formData.category);
+      data.append("codeOffice", formData.codeOffice);
+      data.append("description", formData.description);
+      data.append("status", formData.status);
+      data.append("file", file); // Tambahkan file ke FormData
+
       const response = await fetch(
         "http://192.168.100.8:8000/api/submit-request",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(formData),
+          body: data, // Kirim data sebagai FormData
         }
       );
 
@@ -83,7 +112,9 @@ const FormPage = () => {
         category: "",
         codeOffice: "",
         description: "",
+        status: "Menunggu",
       });
+      setFile(null); // Reset file
 
       // Arahkan ke halaman StatusPage dengan kode unik sebagai parameter
       router.push(`/status?uniqueCode=${result.unique_code}`);
@@ -101,7 +132,7 @@ const FormPage = () => {
     <>
       <NavbarPage />
       <div className="flex items-center justify-center min-h-screen p-4 sm:p-8">
-        <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md sm:max-w-lg lg:max-w-2xl">
+        <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md sm:max-w-sm lg:max-w-md">
           <h1 className="text-xl sm:text-2xl font-bold mb-6 text-center text-purple-600">
             FORMULIR
           </h1>
@@ -202,6 +233,21 @@ const FormPage = () => {
               ></textarea>
             </div>
 
+            {/* Unggah File */}
+            <div className="mb-4">
+              <label className="block text-gray-700" htmlFor="file">
+                Unggah Surat (PDF/DOCX):
+              </label>
+              <input
+                type="file"
+                id="file"
+                name="file"
+                onChange={handleFileChange}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+              />
+            </div>
+
             {/* Tombol Kirim */}
             <button
               type="submit"
@@ -214,12 +260,6 @@ const FormPage = () => {
             </button>
           </form>
           {/* Menampilkan hasil console */}
-          {consoleOutput && (
-            <div className="mt-6 p-4 bg-gray-200 rounded-md">
-              <h2 className="text-lg font-bold mb-2">Hasil Console:</h2>
-              <pre className="text-sm">{consoleOutput}</pre>
-            </div>
-          )}
         </div>
       </div>
     </>
@@ -227,4 +267,3 @@ const FormPage = () => {
 };
 
 export default FormPage;
-s

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 const DashboardAdministrator = () => {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true); // Tambahkan state loading
+  const [loading, setLoading] = useState(true);
 
   // Ambil data dari API
   useEffect(() => {
@@ -14,8 +14,8 @@ const DashboardAdministrator = () => {
           "http://192.168.100.8:8000/api/admin/requests"
         );
         const data = await response.json();
-        setRequests(data); // Simpan data ke state
-        setLoading(false); // Matikan loading
+        setRequests(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching requests:", error);
         setLoading(false);
@@ -35,55 +35,34 @@ const DashboardAdministrator = () => {
       const file = e.target.files[0];
 
       if (file) {
-        // Balasan otomatis
-        const predefinedMessages = [
-          "Permohonan Anda sedang diproses.",
-          "Dokumen telah diterima, kami akan segera menindaklanjuti.",
-          "Permohonan Anda disetujui. Silakan cek detail lebih lanjut.",
-          "Mohon lengkapi dokumen yang kurang.",
-        ];
+        const formData = new FormData();
+        formData.append("file", file);
 
-        // Pilihan balasan otomatis
-        const selectedMessage = await new Promise((resolve) => {
-          const select = document.createElement("select");
-          select.style.margin = "10px 0";
-          select.innerHTML = predefinedMessages
-            .map((msg) => `<option value="${msg}">${msg}</option>`)
-            .join("");
-
-          const confirmButton = document.createElement("button");
-          confirmButton.textContent = "Kirim Balasan";
-          confirmButton.style.marginLeft = "10px";
-          confirmButton.onclick = () => resolve(select.value);
-
-          document.body.appendChild(select);
-          document.body.appendChild(confirmButton);
-        });
-
-        if (selectedMessage) {
-          const formData = new FormData();
-          formData.append("message", selectedMessage);
-          formData.append("file", file);
-
-          try {
-            const response = await fetch(
-              `http://192.168.100.8:8000/api/admin/reply/${id}`,
-              {
-                method: "POST",
-                body: formData,
-              }
-            );
-
-            const result = await response.json();
-
-            if (response.ok) {
-              alert(`Balasan berhasil dikirim: ${result.message}`);
-            } else {
-              alert(`Error: ${result.message}`);
+        try {
+          const response = await fetch(
+            `http://192.168.100.8:8000/api/admin/reply/${id}`,
+            {
+              method: "POST",
+              body: formData,
             }
-          } catch (error) {
-            alert("Terjadi kesalahan saat mengirim balasan");
+          );
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert("Balasan berhasil dikirim.");
+            // Perbarui status permohonan lokal
+            const updatedRequests = requests.map((request) =>
+              request.id === id
+                ? { ...request, reply_file_url: file.name }
+                : request
+            );
+            setRequests(updatedRequests);
+          } else {
+            alert(`Error: ${result.message}`);
           }
+        } catch (error) {
+          alert("Terjadi kesalahan saat mengirim balasan.");
         }
       }
     };
@@ -138,12 +117,33 @@ const DashboardAdministrator = () => {
                 <td className="border px-4 py-2">{request.category}</td>
                 <td className="border px-4 py-2">{request.status}</td>
                 <td className="border px-4 py-2">
-                  <button
-                    onClick={() => handleReply(request.id)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                  >
-                    ✉ Balas
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {request.status === "Selesai" && request.reply_file_url ? (
+                      <span
+                        className="text-green-500 text-lg font-bold"
+                        title="Balasan sudah dikirim"
+                      >
+                        ✔
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleReply(request.id)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+                      >
+                        ✉ Kirim Balasan
+                      </button>
+                    )}
+                    {request.proof_file_url && (
+                      <a
+                        href={request.proof_file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-200"
+                      >
+                        Lihat Bukti
+                      </a>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
