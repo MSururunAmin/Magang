@@ -18,7 +18,7 @@ const SearchPage = () => {
 
     try {
       const response = await fetch(
-        `http://192.168.100.8:8000/api/search?q=${encodeURIComponent(query)}`
+        `http://192.168.43.47:8000/api/search?q=${encodeURIComponent(query)}`
       );
 
       if (!response.ok) {

@@ -27,30 +27,60 @@ ChartJS.register(
 
 const Page = () => {
   const [data, setData] = useState({
-    totalPermohonan: 127,
-    dalamProses: 45,
-    selesai: 72,
-    ditolak: 10,
-    permohonanTerkini: [
-      {
-        id: "P123",
-        title: "Pengajuan Maintenance Server",
-        status: "Dalam Proses",
-      },
-      { id: "P124", title: "Permohonan Bandwidth Tambahan", status: "Selesai" },
-      {
-        id: "P125",
-        title: "Penggantian Perangkat Jaringan",
-        status: "Menunggu",
-      },
-    ],
-    logAktivitas: [
-      "Permohonan #123 sedang diproses oleh Tim A",
-      "Permohonan #124 selesai",
-      "Permohonan #125 diterima dan menunggu respon teknisi",
-    ],
-    statistik: [50, 60, 45, 70, 90, 80, 72], // Data dummy statistik penyelesaian permohonan
+    totalPermohonan: 0,
+    dalamProses: 0,
+    selesai: 0,
+    ditolak: 0,
+    permohonanTerkini: [],
+    logAktivitas: [],
+    statistik: [], // Data statistik untuk chart
   });
+
+  const [chartData, setChartData] = useState({
+    selesai: [],
+    proses: [],
+    ditolak: [],
+  });
+
+  // Fungsi untuk mengambil data dari API
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        "http://192.168.43.47:8000/api/dashboard-data"
+      ); // Ganti URL dengan endpoint API Laravel
+      if (!response.ok) {
+        throw new Error("Gagal mengambil data");
+      }
+      const result = await response.json();
+      setData(result);
+
+      // Mengelompokkan data permohonan untuk chart
+      const groupedData = groupChartData(result.permohonanTerkini);
+      setChartData(groupedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Fungsi untuk mengelompokkan data permohonan berdasarkan status
+  const groupChartData = (permohonan) => {
+    const selesai = new Array(7).fill(0); // Data untuk status "Selesai"
+    const proses = new Array(7).fill(0); // Data untuk status "Dalam Proses"
+    const ditolak = new Array(7).fill(0); // Data untuk status "Ditolak"
+
+    permohonan.forEach((item, index) => {
+      const week = index % 7; // Simulasikan data mingguan berdasarkan indeks
+      if (item.status === "Selesai") selesai[week]++;
+      if (item.status === "Dalam Proses") proses[week]++;
+      if (item.status === "Ditolak") ditolak[week]++;
+    });
+
+    return { selesai, proses, ditolak };
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -115,7 +145,7 @@ const Page = () => {
             Statistik Penyelesaian Permohonan
           </h2>
           <div>
-            <Chart data={data.statistik} />
+            <Chart data={chartData} />
           </div>
         </div>
       </main>
@@ -143,12 +173,28 @@ const Chart = ({ data }) => {
     ],
     datasets: [
       {
-        label: "Jumlah Permohonan Selesai",
-        data: data,
-        borderColor: "rgba(54, 162, 235, 1)",
-        backgroundColor: "rgba(54, 162, 235, 0.2)",
-        tension: 0.3, // Kelengkungan garis
-        fill: true, // Area bawah garis terisi warna
+        label: "Selesai",
+        data: data.selesai,
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        tension: 0.3,
+        fill: true,
+      },
+      {
+        label: "Dalam Proses",
+        data: data.proses,
+        borderColor: "rgba(255, 206, 86, 1)",
+        backgroundColor: "rgba(255, 206, 86, 0.2)",
+        tension: 0.3,
+        fill: true,
+      },
+      {
+        label: "Ditolak",
+        data: data.ditolak,
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        tension: 0.3,
+        fill: true,
       },
     ],
   };

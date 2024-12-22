@@ -14,7 +14,6 @@ const StatusPage = ({ params }) => {
   const router = useRouter();
   const uniqueCode = params.uniqueCode;
   const [statusData, setStatusData] = useState(null); // Data status permohonan
-  const [replyFileUrl, setReplyFileUrl] = useState(null); // URL file balasan
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,13 +22,14 @@ const StatusPage = ({ params }) => {
       try {
         // Panggil kedua API secara paralel
         const [statusResponse, replyResponse] = await Promise.all([
-          fetch(`http://192.168.100.8:8000/api/status/${uniqueCode}`),
-          fetch(`http://192.168.100.8:8000/api/reply/${uniqueCode}`),
+          fetch(`http://192.168.43.47:8000/api/status/${uniqueCode}`),
+          fetch(`http://192.168.43.47:8000/api/reply/${uniqueCode}`),
         ]);
 
         if (!statusResponse.ok) {
           throw new Error("Gagal mengambil data status. Silakan coba lagi.");
         }
+
         if (!replyResponse.ok && replyResponse.status !== 404) {
           throw new Error("Gagal mengambil data surat balasan.");
         }
@@ -38,8 +38,10 @@ const StatusPage = ({ params }) => {
         const replyData = replyResponse.ok ? await replyResponse.json() : null;
 
         // Simpan data ke state
-        setStatusData(statusData);
-        setReplyFileUrl(replyData?.reply_file_url || null);
+        setStatusData({
+          ...statusData,
+          reply_file_url: replyData?.reply_file_url || null,
+        });
       } catch (err) {
         setError(err.message);
       } finally {
@@ -111,9 +113,9 @@ const StatusPage = ({ params }) => {
   }
 
   const handleDownload = () => {
-    // Redirect to the specified URL
-    window.location.href =
-      "https://e-office.semarangkab.go.id/verifikasi_surat/id/YZMYOTZJ";
+    if (statusData.reply_file_url) {
+      window.location.href = statusData.reply_file_url;
+    }
   };
 
   return (
@@ -167,17 +169,18 @@ const StatusPage = ({ params }) => {
             </div>
           )}
 
-          {/* Tombol Unduh jika file balasan tersedia */}
-          {statusData.reply_file_url && (
-            <div className="flex justify-center items-center ">
-              <button
-                onClick={handleDownload}
-                className="flex flex-row bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-              >
-                Unduh Balasan
-              </button>
-            </div>
-          )}
+          {/* Tombol Unduh jika status selesai dan file balasan tersedia */}
+          {statusData.currentStatus === "Selesai" &&
+            statusData.reply_file_url && (
+              <div className="flex justify-center items-center mt-6">
+                <button
+                  onClick={handleDownload}
+                  className="flex flex-row bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+                >
+                  Unduh Balasan
+                </button>
+              </div>
+            )}
         </div>
       </div>
     </>

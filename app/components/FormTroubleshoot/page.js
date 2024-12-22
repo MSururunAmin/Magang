@@ -81,7 +81,7 @@ const FormPage = () => {
       formDataToSend.append("officeCode", formData.officeCode); // Menambahkan kode office
 
       const response = await fetch(
-        "http://192.168.100.8:8000/api/submit-form",
+        "http://192.168.43.47:8000/api/submit-form",
         {
           method: "POST",
           body: formDataToSend, // Kirim FormData, bukan JSON

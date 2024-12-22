@@ -11,7 +11,7 @@ const DashboardAdministrator = () => {
     const fetchRequests = async () => {
       try {
         const response = await fetch(
-          "http://192.168.100.8:8000/api/admin/requests"
+          "http://192.168.43.47:8000/api/admin/requests"
         );
         const data = await response.json();
         setRequests(data);
@@ -40,7 +40,7 @@ const DashboardAdministrator = () => {
 
         try {
           const response = await fetch(
-            `http://192.168.100.8:8000/api/admin/reply/${id}`,
+            `http://192.168.43.47:8000/api/admin/reply/${id}`,
             {
               method: "POST",
               body: formData,

@@ -60,7 +60,7 @@ const FormPage = () => {
       }
 
       const response = await fetch(
-        "http://192.168.100.8:8000/api/hosting-request",
+        "http://192.168.43.47:8000/api/hosting-request",
         {
           method: "POST",
           body: formDataToSend,

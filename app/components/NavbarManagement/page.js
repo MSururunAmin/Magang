@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Navbar = ({ userRole }) => (
   <nav className="bg-blue-600 text-white p-4">
-    <Link href="/">H</Link>
+    <Link href="/"></Link>
     {userRole === "Admin" && (
       <Link href="admin/Dashboard" className="ml-4">
         Dashboard

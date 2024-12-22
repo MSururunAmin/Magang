@@ -14,7 +14,7 @@ const TechnicianDashboard = () => {
 
       try {
         const response = await fetch(
-          "http://192.168.100.8:8000/api/technician/requests",
+          "http://192.168.43.47:8000/api/technician/requests",
           {
             method: "GET",
             headers: {
@@ -46,7 +46,7 @@ const TechnicianDashboard = () => {
 
     try {
       const response = await fetch(
-        "http://192.168.100.8:8000/api/technician/update-status",
+        "http://192.168.43.47:8000/api/technician/update-status",
         {
           method: "POST",
           headers: {
@@ -170,7 +170,7 @@ const TechnicianDashboard = () => {
                         {request.status}
                       </td>
                       <td className="p-3 border border-gray-200">
-                        {request.status === "Menunggu" && (
+                        {request.status === "Terkirim" && (
                           <div className="flex flex-col space-y-2">
                             <button
                               onClick={() =>

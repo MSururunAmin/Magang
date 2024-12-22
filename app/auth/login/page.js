@@ -10,7 +10,6 @@ const Login = () => {
   const { setRole } = useUser();
   const router = useRouter();
 
-  // Load username from localStorage when component mounts
   useEffect(() => {
     const savedUsername = localStorage.getItem("username");
     if (savedUsername) {
@@ -21,7 +20,6 @@ const Login = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Dummy login logic
     if (username === "admin" && password === "password") {
       setRole("Super-admin");
     } else if (username === "teknisi" && password === "password") {
@@ -35,7 +33,6 @@ const Login = () => {
       return;
     }
 
-    // Save username to localStorage
     localStorage.setItem("username", username);
 
     router.push("/admin/dashboard");
@@ -44,33 +41,37 @@ const Login = () => {
   const handleUsernameChange = (e) => {
     const value = e.target.value;
     setUsername(value);
-    localStorage.setItem("username", value); // Save username in localStorage during typing
+    localStorage.setItem("username", value);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-sm bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+    <div className="flex items-center justify-center min-h-screen bg-cover bg-center background">
+      <div className="w-full max-w-sm p-6 rounded-lg shadow-md bg-white/20 backdrop-blur-xl">
+        <h2 className="text-2xl font-bold text-center mb-4 text-white">
+          Login
+        </h2>
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Username
             </label>
             <input
               type="text"
-              className="w-full p-2 border rounded mt-1"
+              className="w-full p-2 border rounded mt-1 bg-white/10 text-white placeholder-gray-300"
+              placeholder="Masukkan username"
               value={username}
               onChange={handleUsernameChange}
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Password
             </label>
             <input
               type="password"
-              className="w-full p-2 border rounded mt-1"
+              className="w-full p-2 border rounded mt-1 bg-white/10 text-white placeholder-gray-300"
+              placeholder="Masukkan password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -78,7 +79,7 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="w-full bg-blue-500/50 text-white p-2 rounded hover:bg-blue-600/70"
           >
             Login
           </button>
