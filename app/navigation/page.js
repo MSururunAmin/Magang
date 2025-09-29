@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { House, ListChecks, Question, User, X } from "@phosphor-icons/react";
+import { CiLogin } from "react-icons/ci";
 
 // Navbar Component
 const Navbar = () => {
@@ -85,6 +86,13 @@ const Navbar = () => {
                   >
                     <User size={32} />
                     <span>Tentang Kami</span>
+                  </Link>
+                  <Link
+                    href="/auth/login"
+                    className="flex items-center px-4 py-2 hover:bg-purple-700 gap-3 "
+                  >
+                    <CiLogin size={32} />
+                    Login
                   </Link>
                 </div>
 
