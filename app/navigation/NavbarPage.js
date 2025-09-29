@@ -38,6 +38,8 @@ const NavbarPage = () => {
         >
           Tentang Kami
         </Link>
+        <Link href="/auth/login" className="px-5 py-2 hover:bg-purple-700 rounded">
+        Login</Link>
       </div>
     </nav>
   );
