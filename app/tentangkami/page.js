@@ -6,7 +6,7 @@ const TentangKami = () => {
   return (
     <>
       <NavbarPage />
-      <div className="bg-gray-100 min-h-screen py-10">
+      <div className=" min-h-screen py-10">
         <div className="container mx-auto px-6">
           {/* Judul Halaman */}
           <h1 className="text-4xl font-bold text-center text-blue-900 mb-8">

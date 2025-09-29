@@ -22,8 +22,8 @@ const StatusPage = ({ params }) => {
       try {
         // Panggil kedua API secara paralel
         const [statusResponse, replyResponse] = await Promise.all([
-          fetch(`http://192.168.43.47:8000/api/status/${uniqueCode}`),
-          fetch(`http://192.168.43.47:8000/api/reply/${uniqueCode}`),
+          fetch(`http://127.0.0.1:8000/api/status/${uniqueCode}`),
+          fetch(`http://127.0.0.1:8000/api/reply/${uniqueCode}`),
         ]);
 
         if (!statusResponse.ok) {

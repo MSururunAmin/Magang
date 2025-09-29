@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter
+import NavbarPage from "@/app/navigation/NavbarPage";
 
 const FormPage = () => {
   const [formData, setFormData] = useState({
@@ -80,13 +81,10 @@ const FormPage = () => {
       formDataToSend.append("description", formData.description);
       formDataToSend.append("officeCode", formData.officeCode); // Menambahkan kode office
 
-      const response = await fetch(
-        "http://192.168.43.47:8000/api/submit-form",
-        {
-          method: "POST",
-          body: formDataToSend, // Kirim FormData, bukan JSON
-        }
-      );
+      const response = await fetch("http://127.`0.0.1:8000/api/submit-form", {
+        method: "POST",
+        body: formDataToSend, // Kirim FormData, bukan JSON
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -125,136 +123,139 @@ const FormPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-lg">
-        <h1 className="text-2xl font-bold mb-6 text-center text-purple-600">
-          FORMULIR
-        </h1>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {successMessage && (
-          <p className="text-green-500 text-center mb-4">{successMessage}</p>
-        )}
-        <form onSubmit={handleSubmit}>
-          {/* Input fields */}
-          <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="name">
-              Nama:
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="Asal instansi"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
-            />
-          </div>
+    <>
+      <NavbarPage />
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-lg">
+          <h1 className="text-2xl font-bold mb-6 text-center text-purple-600">
+            FORMULIR
+          </h1>
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {successMessage && (
+            <p className="text-green-500 text-center mb-4">{successMessage}</p>
+          )}
+          <form onSubmit={handleSubmit}>
+            {/* Input fields */}
+            <div className="mb-4">
+              <label className="block text-gray-700" htmlFor="name">
+                Nama:
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="Asal instansi"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+              />
+            </div>
 
-          {/* Tanggal */}
-          <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="date">
-              Tanggal:
-            </label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
-            />
-          </div>
+            {/* Tanggal */}
+            <div className="mb-4">
+              <label className="block text-gray-700" htmlFor="date">
+                Tanggal:
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+              />
+            </div>
 
-          {/* Kategori */}
-          <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="category">
-              Kategori:
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+            {/* Kategori */}
+            <div className="mb-4">
+              <label className="block text-gray-700" htmlFor="category">
+                Kategori:
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+              >
+                <option value="" disabled>
+                  Pilih Kategori
+                </option>
+                <option value="jaringan">Jaringan</option>
+                <option value="web">Web</option>
+                <option value="server">Server</option>
+              </select>
+            </div>
+
+            {/* Kode Office */}
+            <div className="mb-4">
+              <label className="block text-gray-700" htmlFor="officeCode">
+                Kode Office:
+              </label>
+              <input
+                type="text"
+                id="officeCode"
+                name="officeCode"
+                value={formData.officeCode}
+                onChange={handleChange}
+                required
+                maxLength={8}
+                pattern="\d{8}" // Hanya angka 8 digit
+                placeholder="Kode Office 8 digit"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+              />
+            </div>
+
+            {/* Bukti Pengiriman */}
+            <div className="mb-4">
+              <label className="block text-gray-700" htmlFor="uploadFile">
+                Bukti Pengiriman (Foto/Dokumen):
+              </label>
+              <input
+                type="file"
+                id="uploadFile"
+                name="uploadFile"
+                accept=".jpg,.jpeg,.png,.pdf"
+                onChange={handleFileChange}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+              />
+            </div>
+
+            {/* Keterangan */}
+            <div className="mb-4">
+              <label className="block text-gray-700" htmlFor="description">
+                Keterangan:
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                required
+                placeholder="Keterangan"
+                rows="4"
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
+              ></textarea>
+            </div>
+
+            {/* Tombol Kirim */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full bg-purple-600 text-white font-bold py-2 rounded hover:bg-purple-700 transition duration-200 ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              <option value="" disabled>
-                Pilih Kategori
-              </option>
-              <option value="jaringan">Jaringan</option>
-              <option value="web">Web</option>
-              <option value="server">Server</option>
-            </select>
-          </div>
-
-          {/* Kode Office */}
-          <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="officeCode">
-              Kode Office:
-            </label>
-            <input
-              type="text"
-              id="officeCode"
-              name="officeCode"
-              value={formData.officeCode}
-              onChange={handleChange}
-              required
-              maxLength={8}
-              pattern="\d{8}" // Hanya angka 8 digit
-              placeholder="Kode Office 8 digit"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
-            />
-          </div>
-
-          {/* Bukti Pengiriman */}
-          <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="uploadFile">
-              Bukti Pengiriman (Foto/Dokumen):
-            </label>
-            <input
-              type="file"
-              id="uploadFile"
-              name="uploadFile"
-              accept=".jpg,.jpeg,.png,.pdf"
-              onChange={handleFileChange}
-              required
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
-            />
-          </div>
-
-          {/* Keterangan */}
-          <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="description">
-              Keterangan:
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              placeholder="Keterangan"
-              rows="4"
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:ring-purple-300"
-            ></textarea>
-          </div>
-
-          {/* Tombol Kirim */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`w-full bg-purple-600 text-white font-bold py-2 rounded hover:bg-purple-700 transition duration-200 ${
-              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {isSubmitting ? "Mengirim..." : "Kirim Permohonan"}
-          </button>
-        </form>
+              {isSubmitting ? "Mengirim..." : "Kirim Permohonan"}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

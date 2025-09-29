@@ -46,7 +46,7 @@ const Page = () => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "http://192.168.43.47:8000/api/dashboard-data"
+        "http://127.0.0.1:8000/api/dashboard-data"
       ); // Ganti URL dengan endpoint API Laravel
       if (!response.ok) {
         throw new Error("Gagal mengambil data");

@@ -8,7 +8,7 @@ const SuperAdminDashboard = () => {
 
   useEffect(() => {
     // Fetch users from API
-    fetch("http://192.168.43.47:8000/api/users")
+    fetch("http://127.0.0.1:8000/api/users")
       .then((response) => response.json())
       .then((data) => setUsers(data))
       .catch((error) => console.error("Error fetching users:", error));
@@ -27,7 +27,7 @@ const SuperAdminDashboard = () => {
     const role = prompt("Masukkan role pengguna:");
     if (name && email && role) {
       try {
-        const response = await fetch("http://192.168.43.47:8000/api/users", {
+        const response = await fetch("http://127.0.0.1:8000/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, email, role }),
@@ -48,14 +48,11 @@ const SuperAdminDashboard = () => {
     const newName = prompt("Masukkan nama baru:");
     if (newName) {
       try {
-        const response = await fetch(
-          `http://192.168.43.47:8000/api/users/${id}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: newName }),
-          }
-        );
+        const response = await fetch(`http://127.0.0.1:8000/api/users/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: newName }),
+        });
         const updatedUser = await response.json();
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
@@ -74,7 +71,7 @@ const SuperAdminDashboard = () => {
     try {
       const action = isActive ? "deactivate" : "reactivate";
       const response = await fetch(
-        `http://192.168.43.47:8000/api/users/${id}/${action}`,
+        `http://127.0.0.1:8000/api/users/${id}/${action}`,
         { method: "PATCH" }
       );
       const updatedUser = await response.json();
@@ -94,7 +91,7 @@ const SuperAdminDashboard = () => {
   const handleDeleteUser = async (id) => {
     if (confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
       try {
-        await fetch(`http://192.168.43.47:8000/api/users/${id}`, {
+        await fetch(`http://127.0.0.1:8000/api/users/${id}`, {
           method: "DELETE",
         });
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));

@@ -10,7 +10,7 @@ const page = () => {
     const fetchRequests = async () => {
       try {
         const response = await fetch(
-          "http://192.168.43.47:8000/api/daftar-permohonan"
+          "http://127.0.0.1:8000/api/daftar-permohonan"
         );
         if (!response.ok) {
           throw new Error("Failed to fetch requests");
