@@ -17,4 +17,4 @@ const sendMessage = async () => {
     setMessages((prev) => [...prev, botMessage]);
   
     setInput("");
-  };s
+  };

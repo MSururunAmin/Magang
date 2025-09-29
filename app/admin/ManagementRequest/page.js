@@ -3,7 +3,7 @@
 import NavbarDashboard from "@/app/components/NavbarDashboard";
 import { useEffect, useState } from "react";
 
-const page = () => {
+const RequestPage = () => {
   const [requests, setRequests] = useState([]);
 
   useEffect(() => {
@@ -89,4 +89,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default RequestPage;

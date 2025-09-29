@@ -25,7 +25,7 @@ ChartJS.register(
   Legend
 );
 
-const Page = () => {
+const DashboardPage = () => {
   const [data, setData] = useState({
     totalPermohonan: 0,
     dalamProses: 0,
@@ -45,9 +45,7 @@ const Page = () => {
   // Fungsi untuk mengambil data dari API
   const fetchData = async () => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/dashboard-data"
-      ); // Ganti URL dengan endpoint API Laravel
+      const response = await fetch("http://127.0.0.1:8000/api/dashboard-data"); // Ganti URL dengan endpoint API Laravel
       if (!response.ok) {
         throw new Error("Gagal mengambil data");
       }
@@ -216,4 +214,4 @@ const Chart = ({ data }) => {
   return <Line data={chartData} options={options} />;
 };
 
-export default Page;
+export default DashboardPage;
